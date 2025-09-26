@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎰 Jeu du Cadenas - Récompenses Spéciales</title>
+  <title>🎰 Jeu du Cadenas</title>
   <style>
     * {
       margin: 0;
@@ -74,14 +74,6 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-    }
-
-    .jackpot {
-      font-size: 1.5em;
-      color: #feca57;
-      margin-bottom: 20px;
-      font-weight: bold;
-      text-shadow: 0 0 10px rgba(254, 202, 87, 0.8);
     }
 
     .difficulty-selector {
@@ -474,23 +466,49 @@
       color: #feca57;
     }
 
-    .reward-info {
-      margin: 5px 0;
-      font-size: 1.2em;
-      color: #ffd700;
-      font-weight: bold;
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-      padding: 10px;
-      background: rgba(255, 215, 0, 0.2);
-      border-radius: 10px;
-      border: 2px solid rgba(255, 215, 0, 0.5);
-      animation: pulse 2s infinite;
+    /* RÉCOMPENSES VISIBLES SOUS LE CADENAS */
+    .rewards-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+    .reward-card {
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.3), rgba(254, 202, 87, 0.3));
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      border-radius: 15px;
+      padding: 15px;
+      min-width: 180px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      animation: pulse 3s infinite;
+    }
+
+    .reward-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.5), rgba(254, 202, 87, 0.5));
+    }
+
+    .reward-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+    }
+
+    .reward-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 5px;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .reward-difficulty {
+      font-size: 0.9em;
+      color: #feca57;
     }
 
     /* ANIMATIONS DE RÉCOMPENSE AVANT-PLAN */
@@ -503,7 +521,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 9999; /* TRÈS ÉLEVÉ pour être au premier plan */
+      z-index: 9999;
       background: rgba(0, 0, 0, 0.95);
       animation: rewardFadeIn 0.8s ease;
     }
@@ -519,7 +537,7 @@
       }
     }
 
-    .reward-content {
+    .reward-popup {
       background: linear-gradient(135deg, #ff6b9d, #feca57, #ff6b9d);
       padding: 40px;
       border-radius: 25px;
@@ -530,10 +548,10 @@
       box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
       position: relative;
       overflow: hidden;
-      z-index: 10000; /* Encore plus élevé */
+      z-index: 10000;
     }
 
-    .reward-content::before {
+    .reward-popup::before {
       content: '';
       position: absolute;
       top: -50%;
@@ -561,7 +579,7 @@
       }
     }
 
-    .reward-icon {
+    .reward-popup-icon {
       font-size: 8em;
       margin-bottom: 20px;
       animation: rewardBounce 1s infinite, glow 2s infinite;
@@ -578,7 +596,7 @@
       50% { filter: drop-shadow(0 0 40px rgba(255, 255, 255, 1)); }
     }
 
-    .reward-title {
+    .reward-popup-title {
       font-size: 3.5em;
       margin-bottom: 15px;
       color: white;
@@ -595,7 +613,7 @@
       50% { transform: scale(1.1); }
     }
 
-    .reward-description {
+    .reward-popup-description {
       font-size: 1.5em;
       margin-bottom: 25px;
       color: white;
@@ -614,34 +632,13 @@
       transition: all 0.3s;
       font-weight: bold;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      z-index: 10001; /* Au-dessus de tout */
+      z-index: 10001;
     }
 
     .reward-close:hover {
       background: linear-gradient(45deg, #27ae60, #2ecc71);
       transform: scale(1.1);
       box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    }
-
-    /* Effet de particules pour les récompenses */
-    .reward-particle {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      pointer-events: none;
-      z-index: 10002; /* Encore plus élevé */
-      animation: particleFloat 3s ease-out forwards;
-    }
-
-    @keyframes particleFloat {
-      0% {
-        opacity: 1;
-        transform: translate(0, 0) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(var(--tx), var(--ty)) scale(0);
-      }
     }
 
     .speed-indicator {
@@ -695,26 +692,26 @@
         min-width: 100px;
       }
 
-      .reward-content {
-        max-width: 90%;
-        padding: 25px;
+      .reward-card {
+        min-width: 140px;
+        padding: 10px;
       }
 
       .reward-icon {
-        font-size: 5em;
-      }
-
-      .reward-title {
         font-size: 2.5em;
       }
 
-      .reward-description {
-        font-size: 1.2em;
+      .reward-title {
+        font-size: 1em;
       }
 
       .controls {
         flex-direction: column;
         align-items: center;
+      }
+
+      .rewards-container {
+        gap: 10px;
       }
     }
 
@@ -745,42 +742,66 @@
         min-width: 80px;
       }
 
-      .reward-content {
-        padding: 20px;
+      .reward-card {
+        min-width: 120px;
+        padding: 8px;
       }
 
       .reward-icon {
-        font-size: 4em;
-      }
-
-      .reward-title {
         font-size: 2em;
       }
 
-      .reward-description {
-        font-size: 1em;
+      .reward-title {
+        font-size: 0.9em;
+      }
+
+      .rewards-container {
+        gap: 8px;
       }
     }
   </style>
 </head>
 <body>
   <div class="game-container">
-    <h1>🎰 Jeu du Cadenas - Récompenses Spéciales</h1>
+    <h1>🎰 Jeu du Cadenas</h1>
     
     <div class="difficulty-selector">
-      <button id="difficulty4" class="difficulty-btn easy active">4 Chiffres (Facile)</button>
-      <button id="difficulty5" class="difficulty-btn medium">5 Chiffres (Moyen)</button>
-      <button id="difficulty6" class="difficulty-btn hard">6 Chiffres (Difficile)</button>
-      <button id="difficulty7" class="difficulty-btn expert">7 Chiffres (Expert)</button>
+      <button id="difficulty4" class="difficulty-btn easy active">4 Chiffres</button>
+      <button id="difficulty5" class="difficulty-btn medium">5 Chiffres</button>
+      <button id="difficulty6" class="difficulty-btn hard">6 Chiffres</button>
+      <button id="difficulty7" class="difficulty-btn expert">7 Chiffres</button>
     </div>
 
     <div class="difficulty-info" id="difficultyInfo">Objectif : Obtenir 7777 !</div>
-    <div class="reward-info" id="rewardInfo">🎁 RÉCOMPENSE : 🐋 UNE BALEINE MAGNIFIQUE !</div>
     
     <div class="lock-body">
       <div class="lock-shackle"></div>
       <div class="lock-container" id="lockContainer">
         <!-- Les roues de chiffres seront générées ici -->
+      </div>
+    </div>
+
+    <!-- RÉCOMPENSES VISIBLES SOUS LE CADENAS -->
+    <div class="rewards-container">
+      <div class="reward-card" data-difficulty="4">
+        <div class="reward-icon">🐋</div>
+        <div class="reward-title">BALEINE</div>
+        <div class="reward-difficulty">4 chiffres</div>
+      </div>
+      <div class="reward-card" data-difficulty="5">
+        <div class="reward-icon">🌍</div>
+        <div class="reward-title">PLANÈTE</div>
+        <div class="reward-difficulty">5 chiffres</div>
+      </div>
+      <div class="reward-card" data-difficulty="6">
+        <div class="reward-icon">🌌</div>
+        <div class="reward-title">UNIVERS</div>
+        <div class="reward-difficulty">6 chiffres</div>
+      </div>
+      <div class="reward-card" data-difficulty="7">
+        <div class="reward-icon">💰</div>
+        <div class="reward-title">100K PIÈCES</div>
+        <div class="reward-difficulty">7 chiffres</div>
       </div>
     </div>
 
@@ -793,14 +814,11 @@
       <button id="mode1000" class="attack-mode-btn">1000 coups</button>
     </div>
 
+    <!-- STATS SIMPLIFIÉES (SANS MEILLEUR SCORE) -->
     <div class="stats">
       <div class="stat-item">
         <div>Coups joués</div>
         <div class="stat-value" id="attemptsCount">0</div>
-      </div>
-      <div class="stat-item">
-        <div>Meilleur score</div>
-        <div class="stat-value" id="bestScore">0</div>
       </div>
       <div class="stat-item">
         <div>Difficulté</div>
@@ -817,7 +835,7 @@
     <div id="message">Prêt à jouer ? Choisissez une difficulté et cliquez sur "Tourner le cadenas" !</div>
 
     <div id="resultContainer" class="hidden result-box">
-      <h3>🎉 Félicitations ! 🎉</h3>
+      <h3>🎉 Félicitations !</h3>
       <p id="winMessage">Vous avez trouvé la combinaison gagnante !</p>
       <p id="attemptsResult">Nombre de tentatives : 0</p>
     </div>
@@ -829,21 +847,15 @@
     // Variables du jeu
     let digits = [];
     let attempts = 0;
-    let bestScores = {
-      4: localStorage.getItem('bestScore4') ? parseInt(localStorage.getItem('bestScore4')) : 0,
-      5: localStorage.getItem('bestScore5') ? parseInt(localStorage.getItem('bestScore5')) : 0,
-      6: localStorage.getItem('bestScore6') ? parseInt(localStorage.getItem('bestScore6')) : 0,
-      7: localStorage.getItem('bestScore7') ? parseInt(localStorage.getItem('bestScore7')) : 0
-    };
     let isSpinning = false;
     let winAnimationActive = false;
     let attackMode = 1;
     let audioContext = null;
     let currentDifficulty = 4;
     let targetCombination = "7777";
-    let isFastMode = false; // Nouvelle variable pour le mode accéléré
+    let isFastMode = false;
 
-    // Récompenses par difficulté - MISE EN VALEUR AMÉLIORÉE
+    // Récompenses par difficulté
     const rewards = {
       4: {
         icon: "🐋",
@@ -875,12 +887,10 @@
     const message = document.getElementById('message');
     const resultContainer = document.getElementById('resultContainer');
     const attemptsCount = document.getElementById('attemptsCount');
-    const bestScoreElement = document.getElementById('bestScore');
     const currentDifficultyElement = document.getElementById('currentDifficulty');
     const attemptsResult = document.getElementById('attemptsResult');
     const winMessage = document.getElementById('winMessage');
     const difficultyInfo = document.getElementById('difficultyInfo');
-    const rewardInfo = document.getElementById('rewardInfo');
     const speedIndicator = document.getElementById('speedIndicator');
 
     // Système audio
@@ -940,18 +950,6 @@
       createSound(200, 0.5, 'sawtooth');
     }
 
-    function playDifficultyChangeSound() {
-      createSound(500, 0.2, 'sine');
-    }
-
-    function playRewardSound() {
-      // Son de récompense plus impressionnant
-      createSound(1000, 0.5, 'sine');
-      setTimeout(() => createSound(1200, 0.5, 'sine'), 200);
-      setTimeout(() => createSound(1400, 0.5, 'sine'), 400);
-      setTimeout(() => createSound(1600, 0.5, 'sine'), 600);
-    }
-
     function playSpeedSound() {
       createSound(800, 0.2, 'sine');
       setTimeout(() => createSound(1000, 0.2, 'sine'), 100);
@@ -963,7 +961,6 @@
       digits = Array(currentDifficulty).fill(0);
       updateDisplay();
       attemptsCount.textContent = attempts;
-      bestScoreElement.textContent = bestScores[currentDifficulty];
       currentDifficultyElement.textContent = currentDifficulty;
       resultContainer.classList.add('hidden');
       updateDifficultyInfo();
@@ -997,10 +994,6 @@
       
       targetCombination = targets[currentDifficulty];
       difficultyInfo.textContent = `Objectif : Obtenir ${targetCombination} !`;
-      
-      // MISE EN VALEUR AMÉLIORÉE DE LA RÉCOMPENSE
-      const reward = rewards[currentDifficulty];
-      rewardInfo.innerHTML = `🎁 <strong>RÉCOMPENSE :</strong> ${reward.icon} ${reward.title}`;
     }
 
     // Supprimer les classes de victoire
@@ -1018,7 +1011,6 @@
         const digitElement = document.getElementById(`digit${index + 1}`);
         if (!digitElement) return resolve();
         
-        // Appliquer la classe de vitesse appropriée
         if (isFastMode) {
           digitElement.classList.add('spinning', 'fast-spin');
         } else {
@@ -1027,7 +1019,7 @@
         
         let spins = 0;
         const maxSpins = isFastMode ? 5 + Math.floor(Math.random() * 5) : 10 + Math.floor(Math.random() * 10);
-        const spinInterval = isFastMode ? 30 : 100; // 3x plus rapide en mode accéléré
+        const spinInterval = isFastMode ? 30 : 100;
         
         const spinIntervalId = setInterval(() => {
           digits[index] = Math.floor(Math.random() * 10);
@@ -1062,57 +1054,22 @@
       }
     }
 
-    // Créer des particules pour l'animation de récompense
-    function createRewardParticles() {
-      for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'reward-particle';
-        particle.innerHTML = '✨';
-        particle.style.left = '50%';
-        particle.style.top = '50%';
-        particle.style.fontSize = (Math.random() * 20 + 10) + 'px';
-        particle.style.color = getRandomColor();
-        
-        // Position finale aléatoire
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 200 + Math.random() * 300;
-        const tx = Math.cos(angle) * distance;
-        const ty = Math.sin(angle) * distance;
-        
-        particle.style.setProperty('--tx', tx + 'px');
-        particle.style.setProperty('--ty', ty + 'px');
-        
-        document.body.appendChild(particle);
-        
-        // Supprimer la particule après l'animation
-        setTimeout(() => {
-          if (particle.parentNode) {
-            particle.parentNode.removeChild(particle);
-          }
-        }, 3000);
-      }
-    }
-
-    // Afficher la récompense - VERSION AMÉLIORÉE (AVANT-PLAN)
+    // Afficher la récompense
     function showReward() {
       const reward = rewards[currentDifficulty];
       const rewardAnimation = document.createElement('div');
       rewardAnimation.className = 'reward-animation';
       
       rewardAnimation.innerHTML = `
-        <div class="reward-content">
-          <div class="reward-icon">${reward.icon}</div>
-          <div class="reward-title">${reward.title}</div>
-          <div class="reward-description">${reward.description}</div>
+        <div class="reward-popup">
+          <div class="reward-popup-icon">${reward.icon}</div>
+          <div class="reward-popup-title">${reward.title}</div>
+          <div class="reward-popup-description">${reward.description}</div>
           <button class="reward-close">CONTINUER</button>
         </div>
       `;
       
       document.body.appendChild(rewardAnimation);
-      playRewardSound();
-      
-      // Ajouter des particules
-      createRewardParticles();
       
       // Fermer l'animation
       const closeButton = rewardAnimation.querySelector('.reward-close');
@@ -1128,7 +1085,7 @@
       }, 7000);
     }
 
-    // Tourner tous les chiffres (AVEC MODE ACCÉLÉRÉ)
+    // Tourner tous les chiffres
     async function spinAllDigits() {
       if (isSpinning) return;
       
@@ -1136,21 +1093,16 @@
       spinBtn.disabled = true;
       message.textContent = "Le cadenas tourne...";
       
-      // Effectuer le nombre de coups sélectionné
       for (let coup = 0; coup < attackMode; coup++) {
-        // Animation des chiffres (parallèle en mode accéléré)
         const spinPromises = [];
         for (let i = 0; i < currentDifficulty; i++) {
           if (isFastMode) {
-            // En mode accéléré, tourner tous les chiffres en parallèle
             spinPromises.push(spinDigit(i));
           } else {
-            // En mode normal, tourner séquentiellement
             await spinDigit(i);
           }
         }
         
-        // Attendre que tous les chiffres aient fini de tourner en mode accéléré
         if (isFastMode && spinPromises.length > 0) {
           await Promise.all(spinPromises);
         }
@@ -1158,13 +1110,11 @@
         attempts++;
         attemptsCount.textContent = attempts;
         
-        // Vérifier si c'est une victoire
         const currentCombination = digits.join('');
         if (currentCombination === targetCombination) {
           await winGame();
           break;
         } else if (coup < attackMode - 1) {
-          // Pause réduite entre les coups en mode accéléré
           await new Promise(resolve => setTimeout(resolve, isFastMode ? 100 : 300));
         }
       }
@@ -1185,7 +1135,6 @@
       message.textContent = "🎉 FÉLICITATIONS ! Vous avez gagné ! 🎉";
       playWinSound();
       
-      // Animation de victoire pour chaque chiffre
       for (let i = 0; i < currentDifficulty; i++) {
         setTimeout(() => {
           const digitElement = document.getElementById(`digit${i + 1}`);
@@ -1193,64 +1142,16 @@
         }, i * 200);
       }
       
-      // Mise à jour du meilleur score
-      if (bestScores[currentDifficulty] === 0 || attempts < bestScores[currentDifficulty]) {
-        bestScores[currentDifficulty] = attempts;
-        localStorage.setItem(`bestScore${currentDifficulty}`, bestScores[currentDifficulty]);
-        bestScoreElement.textContent = bestScores[currentDifficulty];
-      }
-      
-      // Affichage du résultat
       winMessage.textContent = `Vous avez trouvé la combinaison gagnante ${targetCombination} !`;
       attemptsResult.textContent = `Nombre de tentatives : ${attempts}`;
       await new Promise(resolve => setTimeout(resolve, 1500));
       resultContainer.classList.remove('hidden');
       
-      // Afficher la récompense (AMÉLIORÉE - AVANT-PLAN)
       showReward();
       
-      // Animation de confettis
-      createConfetti();
-      
-      // Réinitialiser après un délai
       setTimeout(() => {
         winAnimationActive = false;
       }, 5000);
-    }
-
-    // Création d'animation de confettis
-    function createConfetti() {
-      const confettiContainer = document.createElement('div');
-      confettiContainer.className = 'win-animation';
-      document.body.appendChild(confettiContainer);
-      
-      // Créer des confettis
-      for (let i = 0; i < 150; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * 100 + 'vw';
-        confetti.style.backgroundColor = getRandomColor();
-        confetti.style.animation = `confettiFall ${2 + Math.random() * 3}s linear forwards`;
-        confetti.style.animationDelay = Math.random() * 2 + 's';
-        confettiContainer.appendChild(confetti);
-      }
-      
-      // Texte de victoire
-      const winText = document.createElement('div');
-      winText.className = 'win-text';
-      winText.textContent = `${targetCombination}!`;
-      confettiContainer.appendChild(winText);
-      
-      // Supprimer l'animation après un délai
-      setTimeout(() => {
-        document.body.removeChild(confettiContainer);
-      }, 5000);
-    }
-
-    // Générer une couleur aléatoire
-    function getRandomColor() {
-      const colors = ['#feca57', '#ff6b9d', '#48dbfb', '#1dd1a1', '#f368e0', '#ff9ff3'];
-      return colors[Math.floor(Math.random() * colors.length)];
     }
 
     // Définir le mode d'attaque
@@ -1277,7 +1178,6 @@
       
       document.getElementById(`difficulty${difficulty}`).classList.add('active');
       
-      playDifficultyChangeSound();
       initGame();
     }
 
@@ -1315,7 +1215,6 @@
         toggleSpeedMode();
       }
       
-      // Raccourcis numériques pour les modes
       if (e.key >= '1' && e.key <= '6') {
         const modes = [1, 5, 10, 30, 100, 1000];
         const index = parseInt(e.key) - 1;
@@ -1324,11 +1223,9 @@
         }
       }
       
-      // Raccourcis pour les difficultés (F1-F4)
-      if (e.key === 'F1' || e.key === '1' && e.altKey) setDifficulty(4);
-      if (e.key === 'F2' || e.key === '2' && e.altKey) setDifficulty(5);
-      if (e.key === 'F3' || e.key === '3' && e.altKey) setDifficulty(6);
-      if (e.key === 'F4' || e.key === '4' && e.altKey) setDifficulty(7);
+      if (e.key >= '4' && e.key <= '7') {
+        setDifficulty(parseInt(e.key));
+      }
     });
 
     // Initialisation au chargement
