@@ -203,6 +203,10 @@
       animation: spinDigit 0.1s linear infinite;
     }
 
+    .digit-wheel.fast-spin {
+      animation: spinDigit 0.03s linear infinite;
+    }
+
     @keyframes spinDigit {
       0% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
@@ -244,11 +248,15 @@
 
     .controls {
       margin: 25px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     button {
       padding: 15px 30px;
-      margin: 10px;
+      margin: 5px;
       font-size: 18px;
       cursor: pointer;
       border: none;
@@ -308,6 +316,26 @@
 
     #spinBtn:hover {
       background: linear-gradient(45deg, #2ecc71, #27ae60);
+    }
+
+    #speedBtn {
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      font-size: 16px;
+      padding: 15px 25px;
+    }
+
+    #speedBtn:hover {
+      background: linear-gradient(45deg, #2980b9, #3498db);
+    }
+
+    #speedBtn.active {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      animation: pulseSpeed 1s infinite;
+    }
+
+    @keyframes pulseSpeed {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
     #message {
@@ -448,11 +476,24 @@
 
     .reward-info {
       margin: 5px 0;
-      font-size: 1em;
+      font-size: 1.2em;
       color: #ffd700;
       font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+      padding: 10px;
+      background: rgba(255, 215, 0, 0.2);
+      border-radius: 10px;
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      animation: pulse 2s infinite;
     }
 
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* ANIMATIONS DE RÉCOMPENSE AVANT-PLAN */
     .reward-animation {
       position: fixed;
       top: 0;
@@ -462,68 +503,158 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 2000;
-      background: rgba(0, 0, 0, 0.8);
-      animation: fadeIn 0.5s ease;
+      z-index: 9999; /* TRÈS ÉLEVÉ pour être au premier plan */
+      background: rgba(0, 0, 0, 0.95);
+      animation: rewardFadeIn 0.8s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    @keyframes rewardFadeIn {
+      from { 
+        opacity: 0; 
+        background: rgba(0, 0, 0, 0);
+      }
+      to { 
+        opacity: 1; 
+        background: rgba(0, 0, 0, 0.95);
+      }
     }
 
     .reward-content {
-      background: linear-gradient(135deg, #ff6b9d, #feca57);
-      padding: 30px;
-      border-radius: 20px;
+      background: linear-gradient(135deg, #ff6b9d, #feca57, #ff6b9d);
+      padding: 40px;
+      border-radius: 25px;
       text-align: center;
-      max-width: 500px;
-      animation: scaleIn 0.5s ease;
+      max-width: 600px;
+      animation: rewardScaleIn 0.8s ease;
+      border: 4px solid gold;
+      box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+      position: relative;
+      overflow: hidden;
+      z-index: 10000; /* Encore plus élevé */
     }
 
-    @keyframes scaleIn {
-      from { transform: scale(0.5); }
-      to { transform: scale(1); }
+    .reward-content::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shine 3s infinite;
+      transform: rotate(45deg);
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    @keyframes rewardScaleIn {
+      from { 
+        transform: scale(0.3) rotate(-10deg);
+        opacity: 0;
+      }
+      to { 
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
     }
 
     .reward-icon {
-      font-size: 5em;
+      font-size: 8em;
       margin-bottom: 20px;
-      animation: bounce 1s infinite;
+      animation: rewardBounce 1s infinite, glow 2s infinite;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    @keyframes rewardBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.2); }
+    }
+
+    @keyframes glow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255, 255, 255, 1)); }
     }
 
     .reward-title {
-      font-size: 2.5em;
-      margin-bottom: 10px;
+      font-size: 3.5em;
+      margin-bottom: 15px;
       color: white;
-      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+      text-shadow: 0 0 20px rgba(0,0,0,0.8);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: titlePulse 2s infinite;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
     }
 
     .reward-description {
-      font-size: 1.2em;
-      margin-bottom: 20px;
+      font-size: 1.5em;
+      margin-bottom: 25px;
       color: white;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
 
     .reward-close {
-      padding: 10px 20px;
-      background: #2ecc71;
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
       border: none;
-      border-radius: 10px;
+      border-radius: 50px;
       color: white;
-      font-size: 1.1em;
+      font-size: 1.3em;
       cursor: pointer;
       transition: all 0.3s;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 10001; /* Au-dessus de tout */
     }
 
     .reward-close:hover {
-      background: #27ae60;
-      transform: scale(1.05);
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    /* Effet de particules pour les récompenses */
+    .reward-particle {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+      z-index: 10002; /* Encore plus élevé */
+      animation: particleFloat 3s ease-out forwards;
+    }
+
+    @keyframes particleFloat {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0);
+      }
+    }
+
+    .speed-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: bold;
+      display: none;
     }
 
     @media (max-width: 768px) {
@@ -563,6 +694,28 @@
         font-size: 14px;
         min-width: 100px;
       }
+
+      .reward-content {
+        max-width: 90%;
+        padding: 25px;
+      }
+
+      .reward-icon {
+        font-size: 5em;
+      }
+
+      .reward-title {
+        font-size: 2.5em;
+      }
+
+      .reward-description {
+        font-size: 1.2em;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
     }
 
     @media (max-width: 480px) {
@@ -591,6 +744,22 @@
         font-size: 12px;
         min-width: 80px;
       }
+
+      .reward-content {
+        padding: 20px;
+      }
+
+      .reward-icon {
+        font-size: 4em;
+      }
+
+      .reward-title {
+        font-size: 2em;
+      }
+
+      .reward-description {
+        font-size: 1em;
+      }
     }
   </style>
 </head>
@@ -606,7 +775,7 @@
     </div>
 
     <div class="difficulty-info" id="difficultyInfo">Objectif : Obtenir 7777 !</div>
-    <div class="reward-info" id="rewardInfo">Récompense : 🐋 Une Baleine</div>
+    <div class="reward-info" id="rewardInfo">🎁 RÉCOMPENSE : 🐋 UNE BALEINE MAGNIFIQUE !</div>
     
     <div class="lock-body">
       <div class="lock-shackle"></div>
@@ -641,6 +810,7 @@
 
     <div class="controls">
       <button id="spinBtn">Tourner le cadenas</button>
+      <button id="speedBtn">⏩ Accélérer</button>
       <button id="resetBtn">Nouvelle partie</button>
     </div>
 
@@ -651,6 +821,8 @@
       <p id="winMessage">Vous avez trouvé la combinaison gagnante !</p>
       <p id="attemptsResult">Nombre de tentatives : 0</p>
     </div>
+
+    <div class="speed-indicator" id="speedIndicator">VITESSE RAPIDE</div>
   </div>
 
   <script>
@@ -669,34 +841,36 @@
     let audioContext = null;
     let currentDifficulty = 4;
     let targetCombination = "7777";
+    let isFastMode = false; // Nouvelle variable pour le mode accéléré
 
-    // Récompenses par difficulté
+    // Récompenses par difficulté - MISE EN VALEUR AMÉLIORÉE
     const rewards = {
       4: {
         icon: "🐋",
-        title: "UNE BALEINE !",
-        description: "Félicitations ! Vous avez gagné une magnifique baleine !"
+        title: "UNE BALEINE MAGNIFIQUE !",
+        description: "FÉLICITATIONS ! Vous avez gagné une baleine exceptionnelle !"
       },
       5: {
         icon: "🌍",
         title: "LA PLANÈTE MERVEILLE !",
-        description: "Incroyable ! Vous avez découvert la planète merveilleuse !"
+        description: "INCROYABLE ! Vous avez découvert une planète unique !"
       },
       6: {
         icon: "🌌",
-        title: "L'UNIVERS !",
-        description: "Extraordinaire ! Vous avez conquis l'univers tout entier !"
+        title: "L'UNIVERS INFINI !",
+        description: "EXCEPTIONNEL ! Vous maîtrisez désormais l'univers !"
       },
       7: {
         icon: "💰",
-        title: "100 000 PIÈCES !",
-        description: "Fantastique ! Vous avez gagné 100 000 pièces d'or !"
+        title: "100 000 PIÈCES D'OR !",
+        description: "LE JACKPOT ! Vous êtes maintenant riche !"
       }
     };
 
     // Éléments DOM
     const lockContainer = document.getElementById('lockContainer');
     const spinBtn = document.getElementById('spinBtn');
+    const speedBtn = document.getElementById('speedBtn');
     const resetBtn = document.getElementById('resetBtn');
     const message = document.getElementById('message');
     const resultContainer = document.getElementById('resultContainer');
@@ -707,6 +881,7 @@
     const winMessage = document.getElementById('winMessage');
     const difficultyInfo = document.getElementById('difficultyInfo');
     const rewardInfo = document.getElementById('rewardInfo');
+    const speedIndicator = document.getElementById('speedIndicator');
 
     // Système audio
     function initAudioContext() {
@@ -770,9 +945,16 @@
     }
 
     function playRewardSound() {
+      // Son de récompense plus impressionnant
       createSound(1000, 0.5, 'sine');
       setTimeout(() => createSound(1200, 0.5, 'sine'), 200);
       setTimeout(() => createSound(1400, 0.5, 'sine'), 400);
+      setTimeout(() => createSound(1600, 0.5, 'sine'), 600);
+    }
+
+    function playSpeedSound() {
+      createSound(800, 0.2, 'sine');
+      setTimeout(() => createSound(1000, 0.2, 'sine'), 100);
     }
 
     // Initialisation du jeu
@@ -815,7 +997,10 @@
       
       targetCombination = targets[currentDifficulty];
       difficultyInfo.textContent = `Objectif : Obtenir ${targetCombination} !`;
-      rewardInfo.textContent = `Récompense : ${rewards[currentDifficulty].icon} ${rewards[currentDifficulty].title}`;
+      
+      // MISE EN VALEUR AMÉLIORÉE DE LA RÉCOMPENSE
+      const reward = rewards[currentDifficulty];
+      rewardInfo.innerHTML = `🎁 <strong>RÉCOMPENSE :</strong> ${reward.icon} ${reward.title}`;
     }
 
     // Supprimer les classes de victoire
@@ -823,36 +1008,92 @@
       document.querySelectorAll('.digit-wheel').forEach(digit => {
         digit.classList.remove('winning');
         digit.classList.remove('spinning');
+        digit.classList.remove('fast-spin');
       });
     }
 
-    // Animation de rotation d'un chiffre
+    // Animation de rotation d'un chiffre (AVEC MODE ACCÉLÉRÉ)
     function spinDigit(index) {
       return new Promise(resolve => {
         const digitElement = document.getElementById(`digit${index + 1}`);
         if (!digitElement) return resolve();
         
-        digitElement.classList.add('spinning');
+        // Appliquer la classe de vitesse appropriée
+        if (isFastMode) {
+          digitElement.classList.add('spinning', 'fast-spin');
+        } else {
+          digitElement.classList.add('spinning');
+        }
         
         let spins = 0;
-        const maxSpins = 10 + Math.floor(Math.random() * 10);
+        const maxSpins = isFastMode ? 5 + Math.floor(Math.random() * 5) : 10 + Math.floor(Math.random() * 10);
+        const spinInterval = isFastMode ? 30 : 100; // 3x plus rapide en mode accéléré
         
-        const spinInterval = setInterval(() => {
+        const spinIntervalId = setInterval(() => {
           digits[index] = Math.floor(Math.random() * 10);
           digitElement.textContent = digits[index];
-          playSpinSound();
+          if (spins % 2 === 0) playSpinSound();
           spins++;
           
           if (spins >= maxSpins) {
-            clearInterval(spinInterval);
-            digitElement.classList.remove('spinning');
-            setTimeout(resolve, 100);
+            clearInterval(spinIntervalId);
+            digitElement.classList.remove('spinning', 'fast-spin');
+            setTimeout(resolve, isFastMode ? 20 : 100);
           }
-        }, 100);
+        }, spinInterval);
       });
     }
 
-    // Afficher la récompense
+    // Basculer le mode accéléré
+    function toggleSpeedMode() {
+      isFastMode = !isFastMode;
+      
+      if (isFastMode) {
+        speedBtn.classList.add('active');
+        speedBtn.innerHTML = '⏩ Ralenti';
+        speedIndicator.style.display = 'block';
+        playSpeedSound();
+        message.textContent = 'Mode accéléré activé !';
+      } else {
+        speedBtn.classList.remove('active');
+        speedBtn.innerHTML = '⏩ Accélérer';
+        speedIndicator.style.display = 'none';
+        message.textContent = 'Mode normal activé';
+      }
+    }
+
+    // Créer des particules pour l'animation de récompense
+    function createRewardParticles() {
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'reward-particle';
+        particle.innerHTML = '✨';
+        particle.style.left = '50%';
+        particle.style.top = '50%';
+        particle.style.fontSize = (Math.random() * 20 + 10) + 'px';
+        particle.style.color = getRandomColor();
+        
+        // Position finale aléatoire
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 200 + Math.random() * 300;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+        
+        particle.style.setProperty('--tx', tx + 'px');
+        particle.style.setProperty('--ty', ty + 'px');
+        
+        document.body.appendChild(particle);
+        
+        // Supprimer la particule après l'animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 3000);
+      }
+    }
+
+    // Afficher la récompense - VERSION AMÉLIORÉE (AVANT-PLAN)
     function showReward() {
       const reward = rewards[currentDifficulty];
       const rewardAnimation = document.createElement('div');
@@ -863,12 +1104,15 @@
           <div class="reward-icon">${reward.icon}</div>
           <div class="reward-title">${reward.title}</div>
           <div class="reward-description">${reward.description}</div>
-          <button class="reward-close">Continuer</button>
+          <button class="reward-close">CONTINUER</button>
         </div>
       `;
       
       document.body.appendChild(rewardAnimation);
       playRewardSound();
+      
+      // Ajouter des particules
+      createRewardParticles();
       
       // Fermer l'animation
       const closeButton = rewardAnimation.querySelector('.reward-close');
@@ -876,15 +1120,15 @@
         document.body.removeChild(rewardAnimation);
       });
       
-      // Fermer automatiquement après 5 secondes
+      // Fermer automatiquement après 7 secondes
       setTimeout(() => {
         if (document.body.contains(rewardAnimation)) {
           document.body.removeChild(rewardAnimation);
         }
-      }, 5000);
+      }, 7000);
     }
 
-    // Tourner tous les chiffres
+    // Tourner tous les chiffres (AVEC MODE ACCÉLÉRÉ)
     async function spinAllDigits() {
       if (isSpinning) return;
       
@@ -894,9 +1138,21 @@
       
       // Effectuer le nombre de coups sélectionné
       for (let coup = 0; coup < attackMode; coup++) {
-        // Animation séquentielle des chiffres
+        // Animation des chiffres (parallèle en mode accéléré)
+        const spinPromises = [];
         for (let i = 0; i < currentDifficulty; i++) {
-          await spinDigit(i);
+          if (isFastMode) {
+            // En mode accéléré, tourner tous les chiffres en parallèle
+            spinPromises.push(spinDigit(i));
+          } else {
+            // En mode normal, tourner séquentiellement
+            await spinDigit(i);
+          }
+        }
+        
+        // Attendre que tous les chiffres aient fini de tourner en mode accéléré
+        if (isFastMode && spinPromises.length > 0) {
+          await Promise.all(spinPromises);
         }
         
         attempts++;
@@ -908,8 +1164,8 @@
           await winGame();
           break;
         } else if (coup < attackMode - 1) {
-          // Pause entre les coups (sauf le dernier)
-          await new Promise(resolve => setTimeout(resolve, 300));
+          // Pause réduite entre les coups en mode accéléré
+          await new Promise(resolve => setTimeout(resolve, isFastMode ? 100 : 300));
         }
       }
       
@@ -950,7 +1206,7 @@
       await new Promise(resolve => setTimeout(resolve, 1500));
       resultContainer.classList.remove('hidden');
       
-      // Afficher la récompense
+      // Afficher la récompense (AMÉLIORÉE - AVANT-PLAN)
       showReward();
       
       // Animation de confettis
@@ -1027,6 +1283,7 @@
 
     // Événements
     spinBtn.addEventListener('click', spinAllDigits);
+    speedBtn.addEventListener('click', toggleSpeedMode);
     resetBtn.addEventListener('click', initGame);
 
     document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
@@ -1052,6 +1309,10 @@
       
       if (e.key === 'r' || e.key === 'R') {
         initGame();
+      }
+      
+      if (e.key === 's' || e.key === 'S') {
+        toggleSpeedMode();
       }
       
       // Raccourcis numériques pour les modes
