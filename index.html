@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jackpot des Chiffres</title>
+  <title>🎰 Jeu du Cadenas</title>
   <style>
     * {
       margin: 0;
@@ -13,7 +14,8 @@
 
     body {
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      background: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+      background-size: cover;
       color: #fff;
       text-align: center;
       min-height: 100vh;
@@ -23,10 +25,21 @@
       align-items: center;
     }
 
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+
     .game-container {
       max-width: 900px;
       width: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.8);
       border-radius: 20px;
       padding: 30px;
       backdrop-filter: blur(10px);
@@ -64,32 +77,53 @@
       background-clip: text;
     }
 
-    .jackpot-display {
-      background: linear-gradient(45deg, #e74c3c, #c0392b);
-      padding: 15px;
-      border-radius: 15px;
-      margin: 15px 0;
-      border: 3px solid gold;
-      animation: jackpotPulse 2s infinite;
-      box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+    .difficulty-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
     }
 
-    @keyframes jackpotPulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(231, 76, 60, 0.5); }
-      50% { transform: scale(1.02); box-shadow: 0 0 30px rgba(231, 76, 60, 0.8); }
-    }
-
-    .jackpot-amount {
-      font-size: 2.5em;
+    .difficulty-btn {
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      min-width: 120px;
       font-weight: bold;
-      color: gold;
-      text-shadow: 0 0 10px rgba(0,0,0,0.8);
     }
 
-    .jackpot-label {
-      font-size: 1.2em;
-      color: white;
-      margin-bottom: 5px;
+    .difficulty-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .difficulty-btn.active {
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .difficulty-btn.easy {
+      border-color: #2ecc71;
+    }
+
+    .difficulty-btn.medium {
+      border-color: #feca57;
+    }
+
+    .difficulty-btn.hard {
+      border-color: #ff6b9d;
+    }
+
+    .difficulty-btn.expert {
+      border-color: #c44569;
     }
 
     .lock-container {
@@ -101,15 +135,15 @@
       flex-wrap: wrap;
     }
 
-    .number-wheel {
-      width: 80px;
-      height: 120px;
+    .digit-wheel {
+      width: 70px;
+      height: 110px;
       background: linear-gradient(145deg, #2c3e50, #34495e);
       border-radius: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 4em;
+      font-size: 3em;
       font-weight: bold;
       color: #feca57;
       box-shadow: 
@@ -119,14 +153,13 @@
       position: relative;
       overflow: hidden;
       transition: transform 0.3s;
-      font-family: 'Courier New', monospace;
     }
 
-    .number-wheel:hover {
+    .digit-wheel:hover {
       transform: translateY(-5px);
     }
 
-    .number-wheel::before {
+    .digit-wheel::before {
       content: '';
       position: absolute;
       top: 0;
@@ -137,7 +170,7 @@
       pointer-events: none;
     }
 
-    .number-wheel::after {
+    .digit-wheel::after {
       content: '';
       position: absolute;
       top: 50%;
@@ -148,7 +181,7 @@
       box-shadow: 0 0 10px #feca57;
     }
 
-    .number-wheel.winning {
+    .digit-wheel.winning {
       animation: winPulse 0.5s ease-in-out 3;
       background: linear-gradient(145deg, #27ae60, #2ecc71);
       color: white;
@@ -159,15 +192,15 @@
       50% { transform: scale(1.1); }
     }
 
-    .number-wheel.spinning {
-      animation: spinNumber 0.1s linear infinite;
+    .digit-wheel.spinning {
+      animation: spinDigit 0.1s linear infinite;
     }
 
-    .number-wheel.fast-spin {
-      animation: spinNumber 0.03s linear infinite;
+    .digit-wheel.fast-spin {
+      animation: spinDigit 0.03s linear infinite;
     }
 
-    @keyframes spinNumber {
+    @keyframes spinDigit {
       0% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
       100% { transform: translateY(0); }
@@ -356,6 +389,51 @@
       color: #feca57;
     }
 
+    .win-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #feca57;
+      opacity: 0;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(1000px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .win-text {
+      font-size: 5em;
+      font-weight: bold;
+      color: #feca57;
+      text-shadow: 0 0 20px rgba(254, 202, 87, 0.8);
+      animation: textPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes textPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
     .lock-body {
       width: 100%;
       max-width: 600px;
@@ -389,6 +467,52 @@
       color: #feca57;
     }
 
+    /* RÉCOMPENSES VISIBLES SOUS LE CADENAS */
+    .rewards-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .reward-card {
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.3), rgba(254, 202, 87, 0.3));
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      border-radius: 15px;
+      padding: 15px;
+      min-width: 180px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      animation: pulse 3s infinite;
+    }
+
+    .reward-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.5), rgba(254, 202, 87, 0.5));
+    }
+
+    .reward-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+    }
+
+    .reward-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 5px;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .reward-difficulty {
+      font-size: 0.9em;
+      color: #feca57;
+    }
+
+    /* ANIMATIONS DE RÉCOMPENSE AVANT-PLAN */
     .reward-animation {
       position: fixed;
       top: 0;
@@ -428,6 +552,23 @@
       z-index: 10000;
     }
 
+    .reward-popup::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shine 3s infinite;
+      transform: rotate(45deg);
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
     @keyframes rewardScaleIn {
       from { 
         transform: scale(0.3) rotate(-10deg);
@@ -442,11 +583,8 @@
     .reward-popup-icon {
       font-size: 8em;
       margin-bottom: 20px;
-      animation: rewardBounce 1s infinite;
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 20px rgba(0,0,0,0.8);
+      animation: rewardBounce 1s infinite, glow 2s infinite;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
     }
 
     @keyframes rewardBounce {
@@ -454,11 +592,20 @@
       50% { transform: translateY(-30px) scale(1.2); }
     }
 
+    @keyframes glow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255, 255, 255, 1)); }
+    }
+
     .reward-popup-title {
       font-size: 3.5em;
       margin-bottom: 15px;
       color: white;
       text-shadow: 0 0 20px rgba(0,0,0,0.8);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       animation: titlePulse 2s infinite;
     }
 
@@ -508,39 +655,6 @@
       display: none;
     }
 
-    /* COULEURS POUR CHAQUE CHIFFRE */
-    .number-0 { border-color: #e74c3c; }
-    .number-1 { border-color: #f39c12; }
-    .number-2 { border-color: #27ae60; }
-    .number-3 { border-color: #3498db; }
-    .number-4 { border-color: #9b59b6; }
-    .number-5 { border-color: #e67e22; }
-    .number-6 { border-color: #1abc9c; }
-    .number-7 { border-color: #34495e; }
-    .number-8 { border-color: #e91e63; }
-    .number-9 { border-color: #8e44ad; }
-
-    .number-0.winning { background: linear-gradient(145deg, #c0392b, #e74c3c); }
-    .number-1.winning { background: linear-gradient(145deg, #e67e22, #f39c12); }
-    .number-2.winning { background: linear-gradient(145deg, #27ae60, #2ecc71); }
-    .number-3.winning { background: linear-gradient(145deg, #2980b9, #3498db); }
-    .number-4.winning { background: linear-gradient(145deg, #8e44ad, #9b59b6); }
-    .number-5.winning { background: linear-gradient(145deg, #e67e22, #f39c12); }
-    .number-6.winning { background: linear-gradient(145deg, #16a085, #1abc9c); }
-    .number-7.winning { background: linear-gradient(145deg, #2c3e50, #34495e); }
-    .number-8.winning { background: linear-gradient(145deg, #ad1457, #e91e63); }
-    .number-9.winning { background: linear-gradient(145deg, #7b1fa2, #8e44ad); }
-
-    .jackpot-hidden {
-      opacity: 0.3;
-      filter: blur(3px);
-    }
-
-    .jackpot-visible {
-      opacity: 1;
-      filter: none;
-    }
-
     @media (max-width: 768px) {
       .game-container {
         padding: 20px;
@@ -551,10 +665,10 @@
         font-size: 2.2em;
       }
       
-      .number-wheel {
-        width: 70px;
-        height: 100px;
-        font-size: 3.2em;
+      .digit-wheel {
+        width: 55px;
+        height: 90px;
+        font-size: 2.5em;
       }
       
       button {
@@ -573,17 +687,40 @@
         min-width: 50px;
       }
 
+      .difficulty-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+        min-width: 100px;
+      }
+
+      .reward-card {
+        min-width: 140px;
+        padding: 10px;
+      }
+
+      .reward-icon {
+        font-size: 2.5em;
+      }
+
+      .reward-title {
+        font-size: 1em;
+      }
+
       .controls {
         flex-direction: column;
         align-items: center;
       }
+
+      .rewards-container {
+        gap: 10px;
+      }
     }
 
     @media (max-width: 480px) {
-      .number-wheel {
-        width: 60px;
-        height: 90px;
-        font-size: 2.8em;
+      .digit-wheel {
+        width: 45px;
+        height: 75px;
+        font-size: 2em;
       }
       
       .lock-container {
@@ -599,20 +736,44 @@
         font-size: 11px;
         min-width: 45px;
       }
+
+      .difficulty-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 80px;
+      }
+
+      .reward-card {
+        min-width: 120px;
+        padding: 8px;
+      }
+
+      .reward-icon {
+        font-size: 2em;
+      }
+
+      .reward-title {
+        font-size: 0.9em;
+      }
+
+      .rewards-container {
+        gap: 8px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="game-container">
-    <h1>Jackpot des Chiffres</h1>
+    <h1>🎰 Jeu du Cadenas</h1>
     
-    <div class="jackpot-display" id="jackpotDisplay">
-      <div class="jackpot-label">JACKPOT ACTUEL</div>
-      <div class="jackpot-amount" id="jackpotAmount">0 Points</div>
-      <div class="jackpot-info" id="jackpotInfo">Jackpot visible à partir de 1000 points</div>
+    <div class="difficulty-selector">
+      <button id="difficulty4" class="difficulty-btn easy active">4 Chiffres</button>
+      <button id="difficulty5" class="difficulty-btn medium">5 Chiffres</button>
+      <button id="difficulty6" class="difficulty-btn hard">6 Chiffres</button>
+      <button id="difficulty7" class="difficulty-btn expert">7 Chiffres</button>
     </div>
 
-    <div class="difficulty-info" id="difficultyInfo">Objectif : Aligner 5 chiffres identiques ! (0.001% de chances - 1 sur 100,000)</div>
+    <div class="difficulty-info" id="difficultyInfo">Objectif : Obtenir 7777 !</div>
     
     <div class="lock-body">
       <div class="lock-shackle"></div>
@@ -621,44 +782,63 @@
       </div>
     </div>
 
-    <div class="attack-modes">
-      <button id="mode1" class="attack-mode-btn active">1 tour</button>
-      <button id="mode5" class="attack-mode-btn">5 tours</button>
-      <button id="mode10" class="attack-mode-btn">10 tours</button>
-      <button id="mode30" class="attack-mode-btn">30 tours</button>
-      <button id="mode100" class="attack-mode-btn">100 tours</button>
-      <button id="mode10000" class="attack-mode-btn">10,000 tours</button>
+    <!-- RÉCOMPENSES VISIBLES SOUS LE CADENAS -->
+    <div class="rewards-container">
+      <div class="reward-card" data-difficulty="4">
+        <div class="reward-icon">🐋</div>
+        <div class="reward-title">BALEINE</div>
+        <div class="reward-difficulty">4 chiffres</div>
+      </div>
+      <div class="reward-card" data-difficulty="5">
+        <div class="reward-icon">🌍</div>
+        <div class="reward-title">PLANÈTE</div>
+        <div class="reward-difficulty">5 chiffres</div>
+      </div>
+      <div class="reward-card" data-difficulty="6">
+        <div class="reward-icon">🌌</div>
+        <div class="reward-title">UNIVERS</div>
+        <div class="reward-difficulty">6 chiffres</div>
+      </div>
+      <div class="reward-card" data-difficulty="7">
+        <div class="reward-icon">💰</div>
+        <div class="reward-title">100K PIÈCES</div>
+        <div class="reward-difficulty">7 chiffres</div>
+      </div>
     </div>
 
+    <div class="attack-modes">
+      <button id="mode1" class="attack-mode-btn active">1 coup</button>
+      <button id="mode5" class="attack-mode-btn">5 coups</button>
+      <button id="mode10" class="attack-mode-btn">10 coups</button>
+      <button id="mode30" class="attack-mode-btn">30 coups</button>
+      <button id="mode100" class="attack-mode-btn">100 coups</button>
+      <button id="mode1000" class="attack-mode-btn">1000 coups</button>
+    </div>
+
+    <!-- STATS SIMPLIFIÉES (SANS MEILLEUR SCORE) -->
     <div class="stats">
       <div class="stat-item">
-        <div>Tours joués</div>
+        <div>Coups joués</div>
         <div class="stat-value" id="attemptsCount">0</div>
       </div>
       <div class="stat-item">
-        <div>Points accumulés</div>
-        <div class="stat-value" id="pointsCount">0</div>
-      </div>
-      <div class="stat-item">
-        <div>Prochain bonus</div>
-        <div class="stat-value" id="nextBonus">4</div>
+        <div>Difficulté</div>
+        <div class="stat-value" id="currentDifficulty">4</div>
       </div>
     </div>
 
     <div class="controls">
-      <button id="spinBtn">Tourner les rouleaux</button>
-      <button id="speedBtn">Accélérer</button>
+      <button id="spinBtn">Tourner le cadenas</button>
+      <button id="speedBtn">⏩ Accélérer</button>
       <button id="resetBtn">Nouvelle partie</button>
     </div>
 
-    <div id="message">Prêt à jouer ? Alignez 5 chiffres identiques pour remporter le jackpot !</div>
+    <div id="message">Prêt à jouer ? Choisissez une difficulté et cliquez sur "Tourner le cadenas" !</div>
 
     <div id="resultContainer" class="hidden result-box">
-      <h3>JACKPOT GAGNÉ !</h3>
-      <p id="winMessage">Vous avez aligné les 5 chiffres !</p>
-      <p id="attemptsResult">Nombre de tours : 0</p>
-      <p id="winningNumber">Chiffre gagnant : </p>
-      <p id="jackpotWin" class="jackpot-amount">+ 0 Points</p>
+      <h3>🎉 Félicitations !</h3>
+      <p id="winMessage">Vous avez trouvé la combinaison gagnante !</p>
+      <p id="attemptsResult">Nombre de tentatives : 0</p>
     </div>
 
     <div class="speed-indicator" id="speedIndicator">VITESSE RAPIDE</div>
@@ -666,31 +846,39 @@
 
   <script>
     // Variables du jeu
-    let numbers = [];
+    let digits = [];
     let attempts = 0;
     let isSpinning = false;
     let winAnimationActive = false;
     let attackMode = 1;
-    let currentDifficulty = 5;
+    let audioContext = null;
+    let currentDifficulty = 4;
+    let targetCombination = "7777";
     let isFastMode = false;
-    let lastWinningNumber = null;
-    let pointsCount = 0;
-    let jackpotAmount = 0;
-    let bonusCounter = 0;
 
-    // Chiffres disponibles (0-9)
-    const numberTypes = [
-      { value: 0, name: 'Zéro', colorClass: 'number-0' },
-      { value: 1, name: 'Un', colorClass: 'number-1' },
-      { value: 2, name: 'Deux', colorClass: 'number-2' },
-      { value: 3, name: 'Trois', colorClass: 'number-3' },
-      { value: 4, name: 'Quatre', colorClass: 'number-4' },
-      { value: 5, name: 'Cinq', colorClass: 'number-5' },
-      { value: 6, name: 'Six', colorClass: 'number-6' },
-      { value: 7, name: 'Sept', colorClass: 'number-7' },
-      { value: 8, name: 'Huit', colorClass: 'number-8' },
-      { value: 9, name: 'Neuf', colorClass: 'number-9' }
-    ];
+    // Récompenses par difficulté
+    const rewards = {
+      4: {
+        icon: "🐋",
+        title: "UNE BALEINE MAGNIFIQUE !",
+        description: "FÉLICITATIONS ! Vous avez gagné une baleine exceptionnelle !"
+      },
+      5: {
+        icon: "🌍",
+        title: "LA PLANÈTE MERVEILLE !",
+        description: "INCROYABLE ! Vous avez découvert une planète unique !"
+      },
+      6: {
+        icon: "🌌",
+        title: "L'UNIVERS INFINI !",
+        description: "EXCEPTIONNEL ! Vous maîtrisez désormais l'univers !"
+      },
+      7: {
+        icon: "💰",
+        title: "100 000 PIÈCES D'OR !",
+        description: "LE JACKPOT ! Vous êtes maintenant riche !"
+      }
+    };
 
     // Éléments DOM
     const lockContainer = document.getElementById('lockContainer');
@@ -700,128 +888,134 @@
     const message = document.getElementById('message');
     const resultContainer = document.getElementById('resultContainer');
     const attemptsCount = document.getElementById('attemptsCount');
-    const pointsCountElement = document.getElementById('pointsCount');
-    const nextBonusElement = document.getElementById('nextBonus');
-    const jackpotAmountElement = document.getElementById('jackpotAmount');
-    const jackpotDisplay = document.getElementById('jackpotDisplay');
-    const jackpotInfo = document.getElementById('jackpotInfo');
+    const currentDifficultyElement = document.getElementById('currentDifficulty');
     const attemptsResult = document.getElementById('attemptsResult');
     const winMessage = document.getElementById('winMessage');
-    const winningNumberElement = document.getElementById('winningNumber');
-    const jackpotWinElement = document.getElementById('jackpotWin');
     const difficultyInfo = document.getElementById('difficultyInfo');
     const speedIndicator = document.getElementById('speedIndicator');
 
-    function initGame() {
-      attempts = 0;
-      pointsCount = 0;
-      jackpotAmount = 0;
-      bonusCounter = 0;
-      numbers = Array(currentDifficulty).fill(0).map(() => getRandomNumber());
-      updateDisplay();
-      updateStats();
-      resultContainer.classList.add('hidden');
-      updateDifficultyInfo();
-      message.textContent = 'Prêt à jouer ? Alignez 5 chiffres identiques pour remporter le jackpot !';
-      spinBtn.disabled = false;
-      removeWinClasses();
-      updateJackpotDisplay();
-    }
-
-    function updateStats() {
-      attemptsCount.textContent = attempts;
-      pointsCountElement.textContent = pointsCount;
-      nextBonusElement.textContent = 4 - (bonusCounter % 4);
-    }
-
-    function updateJackpotDisplay() {
-      jackpotAmountElement.textContent = `${jackpotAmount} Points`;
-      
-      if (jackpotAmount >= 1000) {
-        jackpotDisplay.classList.remove('jackpot-hidden');
-        jackpotDisplay.classList.add('jackpot-visible');
-        jackpotInfo.textContent = `Jackpot progressif ! Gagnez ${jackpotAmount} points !`;
-      } else {
-        jackpotDisplay.classList.remove('jackpot-visible');
-        jackpotDisplay.classList.add('jackpot-hidden');
-        jackpotInfo.textContent = 'Jackpot visible à partir de 1000 points';
+    // Système audio
+    function initAudioContext() {
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        return audioContext;
+      } catch (e) {
+        return null;
       }
     }
 
-    function getRandomNumber() {
-      return Math.floor(Math.random() * numberTypes.length);
+    function createSound(frequency, duration, type = 'sine', volume = 0.15) {
+      const context = initAudioContext();
+      if (!context) return;
+
+      try {
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(volume, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + duration);
+        
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + duration);
+      } catch (e) {
+        // Silence en cas d'erreur
+      }
     }
 
+    function playSpinSound() {
+      createSound(600, 0.1, 'square');
+    }
+
+    function playClickSound() {
+      createSound(300, 0.05, 'square');
+    }
+
+    function playWinSound() {
+      createSound(800, 0.3, 'sine');
+      setTimeout(() => createSound(1000, 0.3, 'sine'), 300);
+      setTimeout(() => createSound(1200, 0.5, 'sine'), 600);
+    }
+
+    function playLoseSound() {
+      createSound(200, 0.5, 'sawtooth');
+    }
+
+    function playSpeedSound() {
+      createSound(800, 0.2, 'sine');
+      setTimeout(() => createSound(1000, 0.2, 'sine'), 100);
+    }
+
+    // Initialisation du jeu
+    function initGame() {
+      attempts = 0;
+      digits = Array(currentDifficulty).fill(0);
+      updateDisplay();
+      attemptsCount.textContent = attempts;
+      currentDifficultyElement.textContent = currentDifficulty;
+      resultContainer.classList.add('hidden');
+      updateDifficultyInfo();
+      message.textContent = `Prêt à jouer ? Objectif : ${targetCombination} !`;
+      spinBtn.disabled = false;
+      removeWinClasses();
+      playClickSound();
+    }
+
+    // Mise à jour de l'affichage des chiffres
     function updateDisplay() {
       lockContainer.innerHTML = '';
       
-      numbers.forEach((numberIndex, index) => {
-        const numberElement = document.createElement('div');
-        numberElement.className = `number-wheel ${numberTypes[numberIndex].colorClass}`;
-        numberElement.id = `number${index + 1}`;
-        
-        const numberData = numberTypes[numberIndex];
-        numberElement.textContent = numberData.value;
-        
-        lockContainer.appendChild(numberElement);
+      digits.forEach((digit, index) => {
+        const digitElement = document.createElement('div');
+        digitElement.className = 'digit-wheel';
+        digitElement.id = `digit${index + 1}`;
+        digitElement.textContent = digit;
+        lockContainer.appendChild(digitElement);
       });
     }
 
+    // Mise à jour des informations de difficulté
     function updateDifficultyInfo() {
-      difficultyInfo.textContent = 'Objectif : Aligner 5 chiffres identiques ! (0.001% de chances - 1 sur 100,000)';
+      const targets = {
+        4: "7777",
+        5: "77777", 
+        6: "777777",
+        7: "7777777"
+      };
+      
+      targetCombination = targets[currentDifficulty];
+      difficultyInfo.textContent = `Objectif : Obtenir ${targetCombination} !`;
     }
 
+    // Supprimer les classes de victoire
     function removeWinClasses() {
-      document.querySelectorAll('.number-wheel').forEach(wheel => {
-        wheel.classList.remove('winning');
-        wheel.classList.remove('spinning');
-        wheel.classList.remove('fast-spin');
-        
-        numberTypes.forEach(num => {
-          wheel.classList.remove(num.colorClass);
-        });
-        
-        const currentNumber = numbers[parseInt(wheel.id.replace('number', '')) - 1];
-        if (currentNumber !== undefined) {
-          wheel.classList.add(numberTypes[currentNumber].colorClass);
-        }
+      document.querySelectorAll('.digit-wheel').forEach(digit => {
+        digit.classList.remove('winning');
+        digit.classList.remove('spinning');
+        digit.classList.remove('fast-spin');
       });
     }
 
-    function checkWin() {
-      const firstNumber = numbers[0];
-      for (let i = 1; i < numbers.length; i++) {
-        if (numbers[i] !== firstNumber) {
-          return false;
-        }
-      }
-      
-      lastWinningNumber = firstNumber;
-      return true;
-    }
-
-    function handlePointBonus() {
-      bonusCounter++;
-      
-      if (bonusCounter % 4 === 0) {
-        pointsCount += 1;
-        jackpotAmount += 1;
-        message.textContent = '+1 point ajouté au jackpot !';
-        
-        updateStats();
-        updateJackpotDisplay();
-      }
-    }
-
-    function spinNumber(index) {
+    // Animation de rotation d'un chiffre (AVEC MODE ACCÉLÉRÉ)
+    function spinDigit(index) {
       return new Promise(resolve => {
-        const numberElement = document.getElementById(`number${index + 1}`);
-        if (!numberElement) return resolve();
+        const digitElement = document.getElementById(`digit${index + 1}`);
+        if (!digitElement) return resolve();
         
         if (isFastMode) {
-          numberElement.classList.add('spinning', 'fast-spin');
+          digitElement.classList.add('spinning', 'fast-spin');
         } else {
-          numberElement.classList.add('spinning');
+          digitElement.classList.add('spinning');
         }
         
         let spins = 0;
@@ -829,68 +1023,62 @@
         const spinInterval = isFastMode ? 30 : 100;
         
         const spinIntervalId = setInterval(() => {
-          numbers[index] = getRandomNumber();
-          updateSingleNumber(index);
+          digits[index] = Math.floor(Math.random() * 10);
+          digitElement.textContent = digits[index];
+          if (spins % 2 === 0) playSpinSound();
           spins++;
           
           if (spins >= maxSpins) {
             clearInterval(spinIntervalId);
-            numberElement.classList.remove('spinning', 'fast-spin');
+            digitElement.classList.remove('spinning', 'fast-spin');
             setTimeout(resolve, isFastMode ? 20 : 100);
           }
         }, spinInterval);
       });
     }
 
-    function updateSingleNumber(index) {
-      const numberElement = document.getElementById(`number${index + 1}`);
-      if (!numberElement) return;
-      
-      numberTypes.forEach(num => {
-        numberElement.classList.remove(num.colorClass);
-      });
-      
-      const numberData = numberTypes[numbers[index]];
-      numberElement.classList.add(numberData.colorClass);
-      numberElement.textContent = numberData.value;
-    }
-
+    // Basculer le mode accéléré
     function toggleSpeedMode() {
       isFastMode = !isFastMode;
       
       if (isFastMode) {
         speedBtn.classList.add('active');
-        speedBtn.innerHTML = 'Ralenti';
+        speedBtn.innerHTML = '⏩ Ralenti';
         speedIndicator.style.display = 'block';
+        playSpeedSound();
         message.textContent = 'Mode accéléré activé !';
       } else {
         speedBtn.classList.remove('active');
-        speedBtn.innerHTML = 'Accélérer';
+        speedBtn.innerHTML = '⏩ Accélérer';
         speedIndicator.style.display = 'none';
         message.textContent = 'Mode normal activé';
       }
     }
 
+    // Afficher la récompense
     function showReward() {
+      const reward = rewards[currentDifficulty];
       const rewardAnimation = document.createElement('div');
       rewardAnimation.className = 'reward-animation';
       
       rewardAnimation.innerHTML = `
         <div class="reward-popup">
-          <div class="reward-popup-icon">${numberTypes[lastWinningNumber].value}</div>
-          <div class="reward-popup-title">JACKPOT GAGNÉ !</div>
-          <div class="reward-popup-description">Vous avez remporté ${jackpotAmount} points !</div>
+          <div class="reward-popup-icon">${reward.icon}</div>
+          <div class="reward-popup-title">${reward.title}</div>
+          <div class="reward-popup-description">${reward.description}</div>
           <button class="reward-close">CONTINUER</button>
         </div>
       `;
       
       document.body.appendChild(rewardAnimation);
       
+      // Fermer l'animation
       const closeButton = rewardAnimation.querySelector('.reward-close');
       closeButton.addEventListener('click', () => {
         document.body.removeChild(rewardAnimation);
       });
       
+      // Fermer automatiquement après 7 secondes
       setTimeout(() => {
         if (document.body.contains(rewardAnimation)) {
           document.body.removeChild(rewardAnimation);
@@ -898,39 +1086,33 @@
       }, 7000);
     }
 
-    async function spinAllNumbers() {
+    // Tourner tous les chiffres
+    async function spinAllDigits() {
       if (isSpinning) return;
       
       isSpinning = true;
       spinBtn.disabled = true;
-      message.textContent = "Les rouleaux tournent...";
+      message.textContent = "Le cadenas tourne...";
       
       for (let coup = 0; coup < attackMode; coup++) {
-        let canWin = true;
-        let firstNumber = null;
-        
-        // Faire tourner les chiffres un par un et s'arrêter dès qu'il n'y a plus de chance
-        for (let i = 0; i < currentDifficulty && canWin; i++) {
-          await spinNumber(i);
-          
-          if (i === 0) {
-            // Premier chiffre : on garde sa valeur comme référence
-            firstNumber = numbers[0];
+        const spinPromises = [];
+        for (let i = 0; i < currentDifficulty; i++) {
+          if (isFastMode) {
+            spinPromises.push(spinDigit(i));
           } else {
-            // Chiffres suivants : vérifier s'ils sont identiques au premier
-            if (numbers[i] !== firstNumber) {
-              canWin = false;
-              message.textContent = `Pas de chance... Chiffre ${i + 1} différent !`;
-            }
+            await spinDigit(i);
           }
         }
         
+        if (isFastMode && spinPromises.length > 0) {
+          await Promise.all(spinPromises);
+        }
+        
         attempts++;
+        attemptsCount.textContent = attempts;
         
-        handlePointBonus();
-        updateStats();
-        
-        if (canWin && checkWin()) {
+        const currentCombination = digits.join('');
+        if (currentCombination === targetCombination) {
           await winGame();
           break;
         } else if (coup < attackMode - 1) {
@@ -938,38 +1120,31 @@
         }
       }
       
-      if (!checkWin()) {
-        const numberCounts = {};
-        numbers.forEach(numberIndex => {
-          const numberValue = numberTypes[numberIndex].value;
-          numberCounts[numberValue] = (numberCounts[numberValue] || 0) + 1;
-        });
-        
-        const maxCount = Math.max(...Object.values(numberCounts));
-        message.textContent = `Maximum ${maxCount} chiffres identiques - Jackpot: ${jackpotAmount} points`;
+      const currentCombination = digits.join('');
+      if (currentCombination !== targetCombination) {
+        message.textContent = `Combinaison: ${currentCombination} - Essayez encore !`;
+        playLoseSound();
       }
       
       isSpinning = false;
       spinBtn.disabled = false;
     }
 
+    // Gestion de la victoire
     async function winGame() {
       winAnimationActive = true;
-      const winningNumber = numberTypes[lastWinningNumber];
-      message.textContent = `JACKPOT ! Vous avez aligné 5 fois le chiffre ${winningNumber.value} !`;
+      message.textContent = "🎉 FÉLICITATIONS ! Vous avez gagné ! 🎉";
+      playWinSound();
       
       for (let i = 0; i < currentDifficulty; i++) {
         setTimeout(() => {
-          const numberElement = document.getElementById(`number${i + 1}`);
-          if (numberElement) numberElement.classList.add('winning');
+          const digitElement = document.getElementById(`digit${i + 1}`);
+          if (digitElement) digitElement.classList.add('winning');
         }, i * 200);
       }
       
-      winMessage.textContent = `Vous avez aligné 5 fois le chiffre ${winningNumber.value} !`;
-      attemptsResult.textContent = `Nombre de tours : ${attempts}`;
-      winningNumberElement.textContent = `Chiffre gagnant : ${winningNumber.value}`;
-      jackpotWinElement.textContent = `+ ${jackpotAmount} Points`;
-      
+      winMessage.textContent = `Vous avez trouvé la combinaison gagnante ${targetCombination} !`;
+      attemptsResult.textContent = `Nombre de tentatives : ${attempts}`;
       await new Promise(resolve => setTimeout(resolve, 1500));
       resultContainer.classList.remove('hidden');
       
@@ -980,6 +1155,7 @@
       }, 5000);
     }
 
+    // Définir le mode d'attaque
     function setAttackMode(mode) {
       attackMode = mode;
       
@@ -989,11 +1165,25 @@
       
       document.getElementById(`mode${mode}`).classList.add('active');
       
-      spinBtn.textContent = `Tourner (${mode.toLocaleString()} tour${mode > 1 ? 's' : ''})`;
+      spinBtn.textContent = `Tourner (${mode} coup${mode > 1 ? 's' : ''})`;
+      playClickSound();
+    }
+
+    // Changer la difficulté
+    function setDifficulty(difficulty) {
+      currentDifficulty = difficulty;
+      
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(`difficulty${difficulty}`).classList.add('active');
+      
+      initGame();
     }
 
     // Événements
-    spinBtn.addEventListener('click', spinAllNumbers);
+    spinBtn.addEventListener('click', spinAllDigits);
     speedBtn.addEventListener('click', toggleSpeedMode);
     resetBtn.addEventListener('click', initGame);
 
@@ -1002,14 +1192,19 @@
     document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
     document.getElementById("mode30").addEventListener("click", () => setAttackMode(30));
     document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
-    document.getElementById("mode10000").addEventListener("click", () => setAttackMode(10000));
+    document.getElementById("mode1000").addEventListener("click", () => setAttackMode(1000));
+
+    document.getElementById("difficulty4").addEventListener("click", () => setDifficulty(4));
+    document.getElementById("difficulty5").addEventListener("click", () => setDifficulty(5));
+    document.getElementById("difficulty6").addEventListener("click", () => setDifficulty(6));
+    document.getElementById("difficulty7").addEventListener("click", () => setDifficulty(7));
 
     // Raccourcis clavier
     document.addEventListener('keydown', (e) => {
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         if (!isSpinning && !winAnimationActive) {
-          spinAllNumbers();
+          spinAllDigits();
         }
       }
       
@@ -1022,11 +1217,15 @@
       }
       
       if (e.key >= '1' && e.key <= '6') {
-        const modes = [1, 5, 10, 30, 100, 10000];
+        const modes = [1, 5, 10, 30, 100, 1000];
         const index = parseInt(e.key) - 1;
         if (index < modes.length) {
           setAttackMode(modes[index]);
         }
+      }
+      
+      if (e.key >= '4' && e.key <= '7') {
+        setDifficulty(parseInt(e.key));
       }
     });
 
