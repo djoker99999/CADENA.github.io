@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1095,17 +1094,28 @@
       message.textContent = "Le cadenas tourne...";
       
       for (let coup = 0; coup < attackMode; coup++) {
-        const spinPromises = [];
-        for (let i = 0; i < currentDifficulty; i++) {
-          if (isFastMode) {
-            spinPromises.push(spinDigit(i));
-          } else {
-            await spinDigit(i);
-          }
-        }
+        let shouldContinue = true;
         
-        if (isFastMode && spinPromises.length > 0) {
+        if (isFastMode) {
+          // En mode rapide, faire tourner tous les chiffres puis vérifier
+          const spinPromises = [];
+          for (let i = 0; i < currentDifficulty; i++) {
+            spinPromises.push(spinDigit(i));
+          }
           await Promise.all(spinPromises);
+        } else {
+          // En mode normal, vérifier après chaque chiffre
+          for (let i = 0; i < currentDifficulty && shouldContinue; i++) {
+            await spinDigit(i);
+            
+            // Vérifier si on doit arrêter le spin
+            if (i >= 1) { // À partir du 2e chiffre
+              if (digits[i] !== digits[0]) {
+                shouldContinue = false; // Arrêter ce spin
+                break;
+              }
+            }
+          }
         }
         
         attempts++;
